@@ -1,0 +1,18 @@
+Bundle-Version: 1.0.0.${tstamp;yyyyMMdd-HHmmss;CET}
+Bundle-Vendor: Arvid Berg
+
+Bundle-Description: Call rest service and publish results
+
+EnRoute-Application: io.pharmb.service.ndcp.backend
+
+-includeresource: \
+	{readme.md}, \
+	{static=static},\
+	web=web
+
+JPM-Command: rest
+
+-buildpath: \
+	osgi.enroute.base.api,\
+	osgi.enroute.web.simple.provider
+Private-Package: io.pharmb.service.ndcp.backend

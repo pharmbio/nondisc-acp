@@ -10,7 +10,9 @@ It is a common objective for different organizations to be able to contribute to
 The idea of the method is that the different parties train an individual model of their local data, and make this available as a web service accepting a SMILES as input, and delivers results in form of p-values (one per each class in the classification case), and a prediction interval (in the regression case). No other information is transferred over the network, making the implementation preserve privacy completely. The results from the contributing parties is then merged as described in Carlsson et al 2014 (https://link.springer.com/chapter/10.1007/978-3-662-44722-2_25) to yield predictions with lower variance and improved efficiency.
 
 ## Usage
-TBC
+The software ships as docker containers. One with the prediction web site and
+one which can be given an SDF or SMILES file and a CPSign license and will then
+build a model and make it available as a REST service.
 
 ## Implementation
 The implementation uses CPSign (http://cpsign-docs.genettasoft.com/) as the underlying modeling method. A license is required but these are generously provided by GenettaSoft.

@@ -1,0 +1,9 @@
+{
+	"service.pid": "my.rest.calls.config",
+	"corsEnabled": true,
+	"allowOrigin": "*",
+	"allowMethods": "GET, POST, PUT, DELETE",
+	"allowHeaders": "Content-Type",
+	"maxAge": 86400,
+	"allowedMethods": "GET, HEAD, POST, TRACE, OPTIONS"
+}

@@ -1,0 +1,285 @@
+<html>
+<head>
+
+<script type="text/javascript" language="javascript" src="jsme/jsme.nocache.js"></script>
+
+<script>
+
+    var modelUrls = [];
+
+ //this function will be called after the JavaScriptApplet code has been loaded.
+    function jsmeOnLoad() {
+        jsmeApplet = new JSApplet.JSME("jsme_container", "55.5%", "40%");
+        jsmeApplet.setAfterStructureModifiedCallback(showEvent);
+   	    var image = document.getElementById('image');
+		//image.src = "https://cplogd.service.pharmb.io/v1/predictionImage?smiles=&imageWidth="+ Math.floor(window.innerWidth*0.9) +"&imageHeight=" + window.innerHeight/2 
+    }
+
+    function imageNotFound() {
+        document.getElementById('error_label').innerText = "ERROR: Something went wrong with rendering the prediction image. Please try with another molecule or contact a site administrator if the problem persists."
+    }
+
+    function imageFound() {
+        document.getElementById('error_label').innerText = ""
+    }
+
+    function showEvent(event) {
+        var smiles = jsmeApplet.smiles()
+        window.setTimeout( function() { redraw(smiles) }, 900 );
+    }
+
+    function redraw(smiles) {
+        if ( smiles != jsmeApplet.smiles() ) {
+            return;
+        }
+
+        var lis = document.getElementById("url-list").getElementsByTagName("li");
+
+        results = []
+        numberOfResponses = 0
+        redrawResults();
+        
+        for ( var i=0; i<lis.length; i++ ) {
+
+            xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                   results.push( JSON.parse(this.responseText) );
+                   numberOfResponses++;
+                   redrawResults();
+                   console.log("ready");
+                }
+            }
+            xmlhttp.open("GET", "../../rest/predict?smiles=" + smiles + "&url=" + lis[i].innerText, true);
+            xmlhttp.send();
+        }
+    }
+
+    function redrawResults() {
+
+        document.getElementById("numberOfresponses").textContent = numberOfResponses;
+        
+        var sums = {}
+
+        for ( var i=0 ; i<results.length ; i++ ) {
+            predictions = JSON.parse(results[i]).prediction;
+            for ( var j=0 ; j<predictions.length ; j++ ) {
+                if ( sums[predictions[j].label] == null ) {
+                    sums[predictions[j].label] = 0;
+                } 
+                sums[predictions[j].label] += predictions[j].pValue;
+            }
+        }
+
+        document.getElementById("numberOfresponses").textContent = numberOfResponses;
+        
+        var key1 = Object.keys(sums)[0]
+        var key2 = Object.keys(sums)[1]
+
+        document.getElementById("averagelabel1").textContent = sums[key1]/numberOfResponses;
+        document.getElementById("averagelabel2").textContent = sums[key2]/numberOfResponses;
+        
+        document.getElementById("label1").textContent = key1;
+        document.getElementById("label2").textContent = key2;
+        
+        summary = ""
+        for (var i=0 ; i<results.length ; i++ ) {
+        
+            predictions = JSON.parse(results[i]).prediction;
+            summary += "Model " + (i + 1) + "<br>"  
+            for ( var j=0 ; j<predictions.length ; j++ ) {
+				summary += "p(" + predictions[j].label + ")=" + predictions[j].pValue + "<br>" 
+            }
+        }
+        document.getElementById("summarylabel").innerHTML = summary;
+        
+        console.log(results);
+        console.log(sums);
+    }
+</script>
+
+
+<style>
+body {
+  margin: 5px;
+  min-width: 250px;
+}
+
+/* Include the padding and border in an element's total width and height */
+* {
+  box-sizing: border-box;
+}
+
+/* Remove margins and padding from the list */
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style the list items */
+ul li {
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  list-style-type: none;
+  background: #eee;
+  font-size: 18px;
+  transition: 0.2s;
+  
+  /* make the list items unselectable */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Set all odd list items to a different color (zebra-stripes) */
+ul li:nth-child(odd) {
+  background: #f9f9f9;
+}
+
+/* Darker background-color on hover */
+ul li:hover {
+  background: #ddd;
+}
+
+/* Style the header */
+.header {
+  background-color: lightgray;
+  padding: 30px 40px;
+  color: black;
+  text-align: center;
+}
+
+/* Clear floats after the header */
+.header:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the input */
+input {
+  border: none;
+  width: 75%;
+  padding: 10px;
+  float: left;
+  font-size: 16px;
+}
+
+/* Style the "Add" button */
+.addBtn {
+  padding: 10px;
+  width: 25%;
+  background: #d9d9d9;
+  color: #555;
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.addBtn:hover {
+  background-color: #bbb;
+}
+</style>
+
+
+
+</head>
+
+<body>
+<div style="width: 100%; height: 74px; border-bottom: 1px solid #ccc; margin-bottom:1em;">
+    <div style="width: 100%; margin: 0 auto;">
+        <div style="width: 1024px; float: left;">
+            <a href="http://www.pharmb.io" style="text-decoration : none; color : #aaa;"><h1 style="margin: .24em 0; font-family: Ubuntu, arial, helvetica, sans-serif; letter-spacing: -1px; color: #aaa;"><img src="pharmbio_logo.png" style="position: relative; top: 6px; height: 36px; margin-right: .2em;">pharm<span style="color: #c00"><span>b.io</span></span></a><span style="color: black; margin-left: 2em;color: #444;">Non-Disclosed Conformal Prediction </span></h1>
+           
+        </div>
+                
+        <div style="width: 64px; float: right;">
+            <a href="http://farmbio.uu.se/research/researchgroups/pb/?languageId=1"><img src="uu_logo.png"></a>
+        </div>
+    </div>
+</div>
+
+	<noscript>
+		<div
+			style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+			Your web browser must have JavaScript enabled in order for this
+			application to display correctly.</div>
+	</noscript>
+
+        <div style="width: 43%; background-color: white; border: padding: 4px; font-family: sans-serif; float:right;">
+    <h3 style="margin-top: 0">Non-Disclosed Conformal Prediction &mdash; conformal prediction on distributed models</h3>
+    <p>Add URLs to the models you want to use underneath. Then draw your molecule.</p>
+
+    <div id="myDIV" class="header">
+  <h2>List of URLs to models</h2>
+  <input type="text" id="myInput" placeholder="URL...">
+  <span onclick="newElement()" class="addBtn">Add</span>
+</div>
+
+<ul id="url-list">
+<li>http://m32-modelingweb-deployment.os.pharmb.io/v1/predict</li>
+<li>http://m32-modelingweb-deployment.os.pharmb.io/v1/predict</li>
+</ul>
+
+    </div>
+ 
+    <div id="jsme_container"></div>
+
+    <div id="error_label" style="color:red"></div>
+
+<script>
+
+// Create a new list item when clicking on the "Add" button
+function newElement() {
+  var li = document.createElement("li");
+  var inputValue = document.getElementById("myInput").value;
+  var t = document.createTextNode(inputValue);
+  li.appendChild(t);
+  if (inputValue === '') {
+    alert("You must write something!");
+  }
+  if (!validURL(inputValue)) {
+    alert("That didn't look like an URL! You might want to reload the page and try again. Unless you are sure it is an URL, then it probably is one after all...")
+  }
+  document.getElementById("url-list").appendChild(li);
+  document.getElementById("myInput").value = "";
+
+  span.appendChild(txt);
+  li.appendChild(span);
+
+  for (i = 0; i < close.length; i++) {
+    close[i].onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none";
+    }
+  }
+}
+
+// Checks that a string looks like an url
+function validURL(str) {
+var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+  '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return pattern.test(str);
+}
+</script>
+
+<div style="width:50%; padding:10pt;">
+    <div style="float:left">
+	<b>
+	Number of responses: <span id="numberOfresponses"></span><br>
+	p(<span id="label1"></span>): <span id="averagelabel1"></span><br>
+	p(<span id="label2"></span>): <span id="averagelabel2"></span><br>
+	</b>
+	</div>
+	
+	<div id="summarylabel" style="float:right">FOO</div>
+</div>
+</body>
+</html>

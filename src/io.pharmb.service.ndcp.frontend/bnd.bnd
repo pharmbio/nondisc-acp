@@ -1,0 +1,13 @@
+Private-Package: io.pharmb.service.ndcp.frontend.impl
+-buildpath: \
+	osgi.enroute.base.api,\
+	osgi.enroute.web.simple.provider, \
+	biz.aQute.bndlib;packages=*, \
+	osgi.enroute.base.api;version=1.8
+	
+Conditional-Package: aQute.lib*
+
+EnRoute-Application: io.pharmb.service.ndcp.frontend
+
+-includeresource: \
+	{static=static}
