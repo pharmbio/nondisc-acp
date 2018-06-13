@@ -7,16 +7,17 @@ RUN curl -SL 'https://services.gradle.org/distributions/gradle-4.8-bin.zip' \
     && mkdir -p /opt/gradle \
     && unzip -q -d /opt/gradle gradle-4.8-bin.zip \
     && rm gradle-4.8-bin.zip \
-    && chmod -R "g+rwX" //opt/gradle \
+    && chmod -R "g+rwX" /opt/gradle \
     && chown -R jboss:root /opt/gradle
 ENV PATH /opt/gradle/gradle-4.8/bin:$PATH
 ADD . /opt/app-root/src
-RUN chown -R jboss:root /opt/app-root/src
+RUN chown -R jboss:root /opt/app-root/src/ \
+    && chmod -R "g+rwX" /opt/app-root/src/
 USER jboss
 
 WORKDIR /opt/app-root/src
-RUN rm -r cnf/cache/*
-RUN ./gradlew export.io.pharmb.service.ndcp.backend
+RUN rm -rf cnf/cache/*
+RUN ./gradlew jar export.io.pharmb.service.ndcp.backend
 
 EXPOSE 8083
 
