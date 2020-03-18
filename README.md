@@ -20,3 +20,6 @@ The implementation uses CPSign (http://cpsign-docs.genettasoft.com/) as the unde
 
 ## Authors
 Niharika Gauraha, Jonathan Alvarsson, and Ola Spjuth.
+
+## Funding
+This project was financially supported by the Swedish Foundation for Strategic Research (grant BD15-0008SB16-0046) in the [HASTE](http://haste.research.it.uu.se/) project.
